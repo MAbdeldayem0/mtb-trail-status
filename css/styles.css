@@ -114,7 +114,7 @@ header h1 {
 }
 
 .trails-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1rem;
 }
 
@@ -576,26 +576,50 @@ footer {
 
 @media (max-width: 640px) {
     .container {
-        padding: 1rem;
+        padding: 0.75rem;
     }
 
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
     }
 
     .tabs {
         flex-wrap: wrap;
+        gap: 0.4rem;
     }
 
     .tab-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        min-height: 44px;
+    }
+
+    .trails-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .trail-card {
+        padding: 1rem;
     }
 
     .trail-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .trail-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
     }
 
     .trail-footer {
@@ -604,15 +628,50 @@ footer {
         align-items: flex-start;
     }
 
+    .directions-link {
+        padding: 0.5rem 0.75rem;
+        min-height: 44px;
+    }
+
+    .source-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
     .info-card {
-        padding: 1.25rem;
+        padding: 1rem;
     }
 
     .info-card h2 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+    }
+
+    .contact-item {
+        padding: 0.75rem;
     }
 
     .contact-link {
         word-break: break-all;
+        min-height: 44px;
+    }
+
+    footer {
+        margin-top: 0.75rem;
+    }
+}
+
+@media (max-width: 380px) {
+    header h1 {
+        font-size: 1.4rem;
+    }
+
+    .tab-btn {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.85rem;
+    }
+
+    .trail-header h2 {
+        font-size: 1.1rem;
     }
 }
