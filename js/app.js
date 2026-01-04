@@ -116,6 +116,7 @@ function updateWeatherDisplay(trailId, prediction) {
         const t = prediction.tomorrow;
         const iconUrl = `https://openweathermap.org/img/wn/${t.icon}@2x.png`;
         weatherDiv.innerHTML = `
+            <span class="weather-label">Tomorrow's Weather:</span>
             <img class="weather-icon" src="${iconUrl}" alt="${t.description}">
             <span class="weather-temp">${t.tempLow}°-${t.tempHigh}°F</span>
             <span class="weather-desc">${t.description}</span>
@@ -129,9 +130,10 @@ function updateWeatherDisplay(trailId, prediction) {
         const confidenceClass = prediction.confidence || 'low';
         predictionDiv.className = `prediction-info ${confidenceClass}`;
         predictionDiv.innerHTML = `
-            <span class="prediction-label">Tomorrow:</span>
+            <span class="prediction-label">Tomorrow (AI):</span>
             <span class="prediction-badge ${prediction.prediction}">${getStatusText(prediction.prediction)}</span>
             <span class="prediction-reason">${prediction.reason || ''}</span>
+            <span class="prediction-disclaimer">*Weather-based estimate, not official</span>
         `;
     } else if (predictionDiv) {
         predictionDiv.innerHTML = '';
