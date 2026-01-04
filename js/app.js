@@ -97,17 +97,7 @@ function updateLastUpdated(isoString) {
     elements.forEach(el => { el.textContent = timeText; });
 }
 
-function setRefreshButtonLoading(loading) {
-    const btn = document.getElementById('refresh-btn');
-    if (btn) {
-        btn.disabled = loading;
-        btn.textContent = loading ? 'Refreshing...' : 'Refresh';
-    }
-}
-
 async function refreshStatuses() {
-    setRefreshButtonLoading(true);
-
     const data = await fetchAllStatuses();
     const trails = data.trails || {};
 
@@ -121,7 +111,6 @@ async function refreshStatuses() {
     });
 
     updateLastUpdated(data.lastUpdated);
-    setRefreshButtonLoading(false);
 }
 
 // Initial load
