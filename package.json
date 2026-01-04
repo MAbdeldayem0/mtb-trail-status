@@ -1,0 +1,13 @@
+{
+  "name": "mtb-trail-status",
+  "version": "1.0.0",
+  "description": "MTB Trail Status Checker",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "jimp": "^1.6.0",
+    "node-fetch": "^2.7.0",
+    "tesseract.js": "^7.0.0"
+  }
+}

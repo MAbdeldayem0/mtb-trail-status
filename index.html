@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTB Trail Status</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MTB Trail Status</h1>
+            <p class="subtitle">Real-time trail conditions</p>
+        </header>
+
+        <main class="trails-grid">
+            <!-- MoMBA Trail Card -->
+            <div class="trail-card" id="momba-card">
+                <div class="trail-header">
+                    <h2>MoMBA</h2>
+                    <span class="status-badge loading" id="momba-status">Loading...</span>
+                </div>
+                <div class="trail-body">
+                    <p class="trail-description" id="momba-description">Fetching status...</p>
+                </div>
+                <div class="trail-footer">
+                    <span class="last-updated" id="momba-updated"></span>
+                    <a href="https://calendar.google.com/calendar/u/0/embed?ctz=America/New_York&src=mombastatus@gmail.com"
+                       target="_blank"
+                       class="source-link">View Calendar</a>
+                </div>
+            </div>
+
+            <!-- John Bryan MTB Trail Card -->
+            <div class="trail-card" id="johnbryan-card">
+                <div class="trail-header">
+                    <h2>John Bryan MTB</h2>
+                    <span class="status-badge loading" id="johnbryan-status">Loading...</span>
+                </div>
+                <div class="trail-body">
+                    <p class="trail-description" id="johnbryan-description">Fetching status...</p>
+                </div>
+                <div class="trail-footer">
+                    <span class="last-updated" id="johnbryan-updated"></span>
+                    <a href="https://www.facebook.com/profile.php?id=128228967211438"
+                       target="_blank"
+                       class="source-link">View Facebook</a>
+                </div>
+            </div>
+
+            <!-- Caesar Creek Trail Card -->
+            <div class="trail-card" id="caesarcreek-card">
+                <div class="trail-header">
+                    <h2>Caesar Creek</h2>
+                    <span class="status-badge loading" id="caesarcreek-status">Loading...</span>
+                </div>
+                <div class="trail-body">
+                    <p class="trail-description" id="caesarcreek-description">Fetching status...</p>
+                </div>
+                <div class="trail-footer">
+                    <span class="last-updated" id="caesarcreek-updated"></span>
+                    <a href="https://www.facebook.com/profile.php?id=576124532419546"
+                       target="_blank"
+                       class="source-link">View Facebook</a>
+                </div>
+            </div>
+
+            <!-- Troy MTB Trail Card -->
+            <div class="trail-card" id="troy-card">
+                <div class="trail-header">
+                    <h2>Troy MTB</h2>
+                    <span class="status-badge loading" id="troy-status">Loading...</span>
+                </div>
+                <div class="trail-body">
+                    <p class="trail-description" id="troy-description">Fetching status...</p>
+                </div>
+                <div class="trail-footer">
+                    <span class="last-updated" id="troy-updated"></span>
+                    <a href="https://www.facebook.com/profile.php?id=322521698109617"
+                       target="_blank"
+                       class="source-link">View Facebook</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Status updates every 5 minutes</p>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

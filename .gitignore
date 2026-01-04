@@ -1,0 +1,12 @@
+node_modules/
+.netlify/
+.env
+.env.example
+*.log
+.DS_Store
+deno.lock
+_ul
+
+# Example/test images
+*_n.jpg
+troy.jpg
