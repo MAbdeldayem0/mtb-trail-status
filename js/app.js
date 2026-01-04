@@ -1,5 +1,16 @@
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
+async function fetchWeatherPredictions() {
+    try {
+        const response = await fetch('/.netlify/functions/weather-prediction');
+        if (!response.ok) throw new Error('Failed to fetch weather');
+        return await response.json();
+    } catch (error) {
+        console.error('Weather prediction fetch error:', error);
+        return { predictions: {} };
+    }
+}
+
 async function fetchMombaStatus() {
     try {
         const response = await fetch('/.netlify/functions/momba-status');
@@ -97,18 +108,57 @@ function updateTrailCard(trailId, data) {
     }
 }
 
+function updateWeatherDisplay(trailId, prediction) {
+    const weatherDiv = document.getElementById(`${trailId}-weather`);
+    const predictionDiv = document.getElementById(`${trailId}-prediction`);
+
+    if (weatherDiv && prediction && prediction.weather) {
+        const w = prediction.weather;
+        const iconUrl = `https://openweathermap.org/img/wn/${w.icon}@2x.png`;
+        weatherDiv.innerHTML = `
+            <img class="weather-icon" src="${iconUrl}" alt="${w.description}">
+            <span class="weather-temp">${w.temp}°F</span>
+            <span class="weather-desc">${w.description}</span>
+            <span class="weather-details">${w.humidity}% humidity • ${w.wind_speed} mph wind</span>
+        `;
+    } else if (weatherDiv) {
+        weatherDiv.innerHTML = '';
+    }
+
+    if (predictionDiv && prediction && prediction.prediction) {
+        const confidenceClass = prediction.confidence || 'low';
+        predictionDiv.className = `prediction-info ${confidenceClass}`;
+        predictionDiv.innerHTML = `
+            <span class="prediction-label">AI Prediction:</span>
+            <span class="prediction-badge ${prediction.prediction}">${getStatusText(prediction.prediction)}</span>
+            <span class="prediction-reason">${prediction.reason || ''}</span>
+        `;
+    } else if (predictionDiv) {
+        predictionDiv.innerHTML = '';
+        predictionDiv.className = 'prediction-info';
+    }
+}
+
 async function refreshStatuses() {
-    const [mombaData, johnBryanData, caesarCreekData, troyData] = await Promise.all([
+    const [mombaData, johnBryanData, caesarCreekData, troyData, weatherData] = await Promise.all([
         fetchMombaStatus(),
         fetchJohnBryanStatus(),
         fetchCaesarCreekStatus(),
-        fetchTroyStatus()
+        fetchTroyStatus(),
+        fetchWeatherPredictions()
     ]);
 
     updateTrailCard('momba', mombaData);
     updateTrailCard('johnbryan', johnBryanData);
     updateTrailCard('caesarcreek', caesarCreekData);
     updateTrailCard('troy', troyData);
+
+    // Update weather predictions
+    const predictions = weatherData.predictions || {};
+    updateWeatherDisplay('momba', predictions.momba);
+    updateWeatherDisplay('johnbryan', predictions.johnbryan);
+    updateWeatherDisplay('caesarcreek', predictions.caesarcreek);
+    updateWeatherDisplay('troy', predictions.troy);
 }
 
 // Initial load

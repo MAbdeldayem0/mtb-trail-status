@@ -119,6 +119,109 @@ header h1 {
     font-size: 0.95rem;
 }
 
+.weather-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.weather-info:empty {
+    display: none;
+}
+
+.weather-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.weather-temp {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.weather-desc {
+    color: #8892b0;
+    text-transform: capitalize;
+}
+
+.weather-details {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.prediction-info {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prediction-info:empty {
+    display: none;
+}
+
+.prediction-info.high {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.prediction-info.medium {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.prediction-info.low {
+    background: rgba(107, 114, 128, 0.15);
+    border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.prediction-label {
+    font-weight: 600;
+    color: #a8b2d1;
+}
+
+.prediction-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.prediction-badge.open {
+    background: #10b981;
+    color: #fff;
+}
+
+.prediction-badge.closed {
+    background: #ef4444;
+    color: #fff;
+}
+
+.prediction-badge.caution {
+    background: #f59e0b;
+    color: #000;
+}
+
+.prediction-badge.freeze-thaw {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.prediction-reason {
+    color: #8892b0;
+    flex: 1;
+}
+
 .trail-footer {
     display: flex;
     justify-content: space-between;
