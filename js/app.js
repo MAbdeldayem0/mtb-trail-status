@@ -112,14 +112,14 @@ function updateWeatherDisplay(trailId, prediction) {
     const weatherDiv = document.getElementById(`${trailId}-weather`);
     const predictionDiv = document.getElementById(`${trailId}-prediction`);
 
-    if (weatherDiv && prediction && prediction.weather) {
-        const w = prediction.weather;
-        const iconUrl = `https://openweathermap.org/img/wn/${w.icon}@2x.png`;
+    if (weatherDiv && prediction && prediction.tomorrow) {
+        const t = prediction.tomorrow;
+        const iconUrl = `https://openweathermap.org/img/wn/${t.icon}@2x.png`;
         weatherDiv.innerHTML = `
-            <img class="weather-icon" src="${iconUrl}" alt="${w.description}">
-            <span class="weather-temp">${w.temp}°F</span>
-            <span class="weather-desc">${w.description}</span>
-            <span class="weather-details">${w.humidity}% humidity • ${w.wind_speed} mph wind</span>
+            <img class="weather-icon" src="${iconUrl}" alt="${t.description}">
+            <span class="weather-temp">${t.tempLow}°-${t.tempHigh}°F</span>
+            <span class="weather-desc">${t.description}</span>
+            <span class="weather-details">${t.humidity}% humidity • ${t.wind_speed} mph wind</span>
         `;
     } else if (weatherDiv) {
         weatherDiv.innerHTML = '';
@@ -129,7 +129,7 @@ function updateWeatherDisplay(trailId, prediction) {
         const confidenceClass = prediction.confidence || 'low';
         predictionDiv.className = `prediction-info ${confidenceClass}`;
         predictionDiv.innerHTML = `
-            <span class="prediction-label">AI Prediction:</span>
+            <span class="prediction-label">Tomorrow:</span>
             <span class="prediction-badge ${prediction.prediction}">${getStatusText(prediction.prediction)}</span>
             <span class="prediction-reason">${prediction.reason || ''}</span>
         `;

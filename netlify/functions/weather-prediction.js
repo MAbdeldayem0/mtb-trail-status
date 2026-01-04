@@ -8,93 +8,154 @@ const TRAIL_LOCATIONS = {
     troy: { name: 'Troy MTB', lat: 40.04, lon: -84.20 }
 };
 
-function predictStatus(weather) {
-    const temp = weather.temp;
-    const feelsLike = weather.feels_like;
-    const humidity = weather.humidity;
-    const rain1h = weather.rain_1h || 0;
-    const rain3h = weather.rain_3h || 0;
-    const snow1h = weather.snow_1h || 0;
-    const description = weather.description.toLowerCase();
+function predictTomorrowStatus(forecasts) {
+    // Analyze all of tomorrow's forecasts
+    let minTemp = Infinity;
+    let maxTemp = -Infinity;
+    let totalRain = 0;
+    let totalSnow = 0;
+    let hasRain = false;
+    let hasSnow = false;
+    let avgHumidity = 0;
+    let descriptions = [];
+
+    for (const f of forecasts) {
+        minTemp = Math.min(minTemp, f.temp);
+        maxTemp = Math.max(maxTemp, f.temp);
+        totalRain += f.rain || 0;
+        totalSnow += f.snow || 0;
+        avgHumidity += f.humidity;
+
+        const desc = f.description.toLowerCase();
+        descriptions.push(desc);
+        if (desc.includes('rain') || desc.includes('drizzle') || desc.includes('shower')) {
+            hasRain = true;
+        }
+        if (desc.includes('snow')) {
+            hasSnow = true;
+        }
+    }
+
+    avgHumidity = Math.round(avgHumidity / forecasts.length);
 
     let prediction = 'open';
     let confidence = 'medium';
     let reason = '';
 
-    // Freeze/Thaw conditions
-    if (temp <= 35 && temp >= 28) {
+    // Snow expected
+    if (hasSnow || totalSnow > 0) {
         prediction = 'freeze-thaw';
         confidence = 'high';
-        reason = `Temperature ${temp}°F is in freeze/thaw range`;
+        reason = `Snow expected tomorrow`;
     }
-    // Frozen/Closed - too cold
-    else if (temp < 28) {
+    // Rain expected - trails will be muddy
+    else if (hasRain || totalRain > 0.1) {
+        prediction = 'closed';
+        confidence = 'high';
+        const rainAmount = totalRain.toFixed(1);
+        reason = `Rain expected (~${rainAmount}" total)`;
+    }
+    // Freeze/Thaw - temps crossing freezing point
+    else if (minTemp <= 35 && maxTemp >= 32) {
+        prediction = 'freeze-thaw';
+        confidence = 'high';
+        reason = `Temps ${Math.round(minTemp)}°F-${Math.round(maxTemp)}°F (freeze/thaw range)`;
+    }
+    // Frozen solid - too cold
+    else if (maxTemp < 28) {
         prediction = 'freeze-thaw';
         confidence = 'medium';
-        reason = `Temperature ${temp}°F - ground likely frozen`;
+        reason = `Cold temps (high of ${Math.round(maxTemp)}°F) - ground frozen`;
     }
-    // Recent rain - muddy
-    else if (rain1h > 0.1 || rain3h > 0.3) {
-        prediction = 'closed';
-        confidence = 'high';
-        reason = `Recent rain (${rain1h > 0 ? rain1h + '" in last hour' : rain3h + '" in last 3 hours'})`;
-    }
-    // Currently raining
-    else if (description.includes('rain') || description.includes('drizzle')) {
-        prediction = 'closed';
-        confidence = 'high';
-        reason = `Current conditions: ${weather.description}`;
-    }
-    // Snow
-    else if (snow1h > 0 || description.includes('snow')) {
-        prediction = 'freeze-thaw';
-        confidence = 'high';
-        reason = `Snow detected - trails likely affected`;
-    }
-    // High humidity after warm temps (muddy)
-    else if (humidity > 85 && temp > 40 && temp < 60) {
+    // High humidity + moderate temps = potentially soft trails
+    else if (avgHumidity > 85 && minTemp > 35 && maxTemp < 55) {
         prediction = 'caution';
         confidence = 'low';
-        reason = `High humidity (${humidity}%) - trails may be wet`;
+        reason = `High humidity (${avgHumidity}%) - trails may be soft`;
     }
-    // Good conditions
-    else if (temp > 45 && humidity < 70 && rain1h === 0) {
+    // Good conditions expected
+    else if (minTemp > 40 && avgHumidity < 75 && !hasRain) {
         prediction = 'open';
         confidence = 'high';
-        reason = `Good conditions: ${temp}°F, ${humidity}% humidity`;
+        reason = `Good conditions: ${Math.round(minTemp)}°F-${Math.round(maxTemp)}°F, dry`;
     }
-    // Default
+    // Default - seems okay
     else {
         prediction = 'open';
         confidence = 'low';
-        reason = `Conditions seem okay: ${temp}°F`;
+        reason = `Temps ${Math.round(minTemp)}°F-${Math.round(maxTemp)}°F`;
     }
 
-    return { prediction, confidence, reason };
+    return {
+        prediction,
+        confidence,
+        reason,
+        tempLow: Math.round(minTemp),
+        tempHigh: Math.round(maxTemp),
+        rainTotal: totalRain,
+        snowTotal: totalSnow
+    };
 }
 
-async function getWeatherForLocation(lat, lon, apiKey) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+async function getForecastForLocation(lat, lon, apiKey) {
+    // Use 5-day forecast API (free tier includes this)
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
 
     const response = await fetch(url);
     if (!response.ok) {
-        throw new Error(`Weather API error: ${response.status}`);
+        throw new Error(`Forecast API error: ${response.status}`);
     }
 
     const data = await response.json();
 
-    return {
-        temp: Math.round(data.main.temp),
-        feels_like: Math.round(data.main.feels_like),
-        humidity: data.main.humidity,
-        description: data.weather[0].description,
-        icon: data.weather[0].icon,
-        rain_1h: data.rain?.['1h'] || 0,
-        rain_3h: data.rain?.['3h'] || 0,
-        snow_1h: data.snow?.['1h'] || 0,
-        wind_speed: Math.round(data.wind.speed),
-        clouds: data.clouds.all
-    };
+    // Get tomorrow's date range (local time approximation using UTC offset)
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    const dayAfter = new Date(tomorrow);
+    dayAfter.setDate(dayAfter.getDate() + 1);
+
+    // Filter forecasts for tomorrow (daytime: 6am - 9pm)
+    const tomorrowForecasts = data.list.filter(item => {
+        const forecastTime = new Date(item.dt * 1000);
+        const hour = forecastTime.getUTCHours() - 5; // Approximate EST offset
+        return forecastTime >= tomorrow &&
+               forecastTime < dayAfter &&
+               hour >= 6 && hour <= 21;
+    }).map(item => ({
+        time: new Date(item.dt * 1000),
+        temp: item.main.temp,
+        feels_like: item.main.feels_like,
+        humidity: item.main.humidity,
+        description: item.weather[0].description,
+        icon: item.weather[0].icon,
+        rain: item.rain?.['3h'] || 0,
+        snow: item.snow?.['3h'] || 0,
+        wind_speed: Math.round(item.wind.speed)
+    }));
+
+    // If we don't have daytime forecasts, just use all tomorrow forecasts
+    if (tomorrowForecasts.length === 0) {
+        const allTomorrow = data.list.filter(item => {
+            const forecastTime = new Date(item.dt * 1000);
+            return forecastTime >= tomorrow && forecastTime < dayAfter;
+        }).map(item => ({
+            time: new Date(item.dt * 1000),
+            temp: item.main.temp,
+            feels_like: item.main.feels_like,
+            humidity: item.main.humidity,
+            description: item.weather[0].description,
+            icon: item.weather[0].icon,
+            rain: item.rain?.['3h'] || 0,
+            snow: item.snow?.['3h'] || 0,
+            wind_speed: Math.round(item.wind.speed)
+        }));
+        return allTomorrow;
+    }
+
+    return tomorrowForecasts;
 }
 
 exports.handler = async function(event, context) {
@@ -119,28 +180,40 @@ exports.handler = async function(event, context) {
 
         for (const [trailId, location] of Object.entries(TRAIL_LOCATIONS)) {
             try {
-                const weather = await getWeatherForLocation(location.lat, location.lon, apiKey);
-                const prediction = predictStatus(weather);
+                const forecasts = await getForecastForLocation(location.lat, location.lon, apiKey);
+
+                if (forecasts.length === 0) {
+                    predictions[trailId] = {
+                        trail: location.name,
+                        error: 'No forecast data available'
+                    };
+                    continue;
+                }
+
+                const result = predictTomorrowStatus(forecasts);
+
+                // Get a representative forecast for display (midday if available)
+                const midday = forecasts[Math.floor(forecasts.length / 2)];
 
                 predictions[trailId] = {
                     trail: location.name,
-                    weather: {
-                        temp: weather.temp,
-                        feels_like: weather.feels_like,
-                        humidity: weather.humidity,
-                        description: weather.description,
-                        icon: weather.icon,
-                        wind_speed: weather.wind_speed
+                    tomorrow: {
+                        tempHigh: result.tempHigh,
+                        tempLow: result.tempLow,
+                        description: midday.description,
+                        icon: midday.icon,
+                        humidity: midday.humidity,
+                        wind_speed: midday.wind_speed
                     },
-                    prediction: prediction.prediction,
-                    confidence: prediction.confidence,
-                    reason: prediction.reason
+                    prediction: result.prediction,
+                    confidence: result.confidence,
+                    reason: result.reason
                 };
             } catch (err) {
-                console.error(`Error fetching weather for ${trailId}:`, err);
+                console.error(`Error fetching forecast for ${trailId}:`, err);
                 predictions[trailId] = {
                     trail: location.name,
-                    error: 'Unable to fetch weather'
+                    error: 'Unable to fetch forecast'
                 };
             }
         }
