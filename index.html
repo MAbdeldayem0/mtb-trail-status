@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTB Trail Status</title>
+    <title>Miami Valley MTB Trail Status</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>MTB Trail Status</h1>
+            <h1>Miami Valley MTB Trail Status</h1>
             <p class="subtitle">Real-time trail conditions</p>
         </header>
 
@@ -21,8 +21,7 @@
                     <span class="status-badge loading" id="momba-status">Loading...</span>
                 </div>
                 <div class="trail-body">
-                    <p class="trail-description" id="momba-description">Fetching status...</p>
-                    <div class="weather-info" id="momba-weather"></div>
+                    <div class="directions-info" id="momba-directions"></div>
                     <div class="prediction-info" id="momba-prediction"></div>
                 </div>
                 <div class="trail-footer">
@@ -40,8 +39,7 @@
                     <span class="status-badge loading" id="johnbryan-status">Loading...</span>
                 </div>
                 <div class="trail-body">
-                    <p class="trail-description" id="johnbryan-description">Fetching status...</p>
-                    <div class="weather-info" id="johnbryan-weather"></div>
+                    <div class="directions-info" id="johnbryan-directions"></div>
                     <div class="prediction-info" id="johnbryan-prediction"></div>
                 </div>
                 <div class="trail-footer">
@@ -59,8 +57,7 @@
                     <span class="status-badge loading" id="caesarcreek-status">Loading...</span>
                 </div>
                 <div class="trail-body">
-                    <p class="trail-description" id="caesarcreek-description">Fetching status...</p>
-                    <div class="weather-info" id="caesarcreek-weather"></div>
+                    <div class="directions-info" id="caesarcreek-directions"></div>
                     <div class="prediction-info" id="caesarcreek-prediction"></div>
                 </div>
                 <div class="trail-footer">
@@ -78,8 +75,7 @@
                     <span class="status-badge loading" id="troy-status">Loading...</span>
                 </div>
                 <div class="trail-body">
-                    <p class="trail-description" id="troy-description">Fetching status...</p>
-                    <div class="weather-info" id="troy-weather"></div>
+                    <div class="directions-info" id="troy-directions"></div>
                     <div class="prediction-info" id="troy-prediction"></div>
                 </div>
                 <div class="trail-footer">
@@ -92,10 +88,10 @@
         </main>
 
         <footer>
-            <p>Data cached for 30 minutes</p>
+            <p>Data cached for 2 hours</p>
         </footer>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=3"></script>
 </body>
 </html>

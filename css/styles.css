@@ -161,6 +161,61 @@ header h1 {
     font-size: 0.95rem;
 }
 
+.directions-info {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(50, 60, 45, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(100, 120, 80, 0.15);
+}
+
+.directions-info:empty {
+    display: none;
+}
+
+.directions-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #8a8a7a;
+    margin-bottom: 0.4rem;
+}
+
+.directions-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.directions-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    background: rgba(70, 90, 60, 0.5);
+    border: 1px solid rgba(120, 150, 100, 0.2);
+    border-radius: 6px;
+    color: #a8c8a0;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.directions-link:hover {
+    background: rgba(90, 120, 70, 0.6);
+    border-color: rgba(140, 180, 120, 0.3);
+    color: #c0e0b8;
+}
+
+.directions-icon {
+    flex-shrink: 0;
+}
+
+.trailhead-note {
+    color: #7a8a70;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
 .weather-info {
     display: flex;
     align-items: center;

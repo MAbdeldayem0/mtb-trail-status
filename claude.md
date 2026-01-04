@@ -1,6 +1,6 @@
-# MTB Trail Status
+# Miami Valley MTB Trail Status
 
-Real-time mountain bike trail status aggregator for Ohio trails. Displays open/closed status by scraping multiple data sources and provides weather-based predictions for tomorrow.
+Real-time mountain bike trail status aggregator for Miami Valley, Ohio trails. Displays open/closed status by scraping multiple data sources and provides weather-based predictions for tomorrow.
 
 ## Architecture
 
@@ -38,10 +38,20 @@ trail-status/
   - Blue (hue 180-260) → Freeze/Thaw
 - **Library:** Jimp v1.x for image processing
 
+### Trail Directions
+Each trail card displays Google Maps directions links for trailhead parking:
+- **MoMBA:** 4485 Union Rd, Dayton, OH 45424
+- **John Bryan:** Yellow Springs, OH 45387
+- **Troy:** 1670 Troy-Sidney Rd, Troy, OH 45373 (sunrise to sunset)
+- **Caesar Creek:** 3 trailheads
+  - Ward Trailhead (Waynesville)
+  - Campground (Wilmington)
+  - Harveysburg Rd (Waynesville)
+
 ### Tomorrow's Weather Predictions
 - **API:** OpenWeatherMap 5-Day Forecast API (`/data/2.5/forecast`)
 - **Purpose:** Predict tomorrow's trail status (today's status comes from official sources)
-- **Coordinates:** Hardcoded lat/lon for each trail location
+- **Coordinates:** Per-trail coordinates for location-specific forecasts
 - **Display:** Shows "Tomorrow (Prediction):" with disclaimer "*Weather-based estimate, not official*"
 - **Prediction Logic (analyzes all of tomorrow's daytime forecasts):**
   - Snow expected → Freeze/Thaw
@@ -51,14 +61,17 @@ trail-status/
   - High humidity (>85%) + moderate temps → Caution
   - Temps >40°F, humidity <75%, no rain → Open
 
-## Caching & Refresh
+## Caching & Rate Limiting
 
-- **Cache duration:** 30 minutes (`s-maxage=1800`)
+- **CDN cache:** 2 hours (`s-maxage=7200`) - reduces API calls significantly
 - **Error cache:** 5 minutes (`s-maxage=300`)
 - **Auto-refresh:** Disabled (to reduce function invocations)
-- **Manual refresh:** Button in header allows users to refresh on demand
 
-This ensures the "Updated" timestamp reflects when data was actually fetched, not the current request time. Users who want fresh data can click the Refresh button.
+### API Rate Limit Protections
+- **Retry with backoff:** All API calls retry up to 3x with exponential backoff
+- **429 handling:** Rate limit responses trigger retries with Retry-After header support
+
+This ensures the "Updated" timestamp reflects when data was actually fetched, not the current request time.
 
 ## Environment Variables
 

@@ -9,30 +9,77 @@ const TRAILS = {
         type: 'ical',
         source: 'https://calendar.google.com/calendar/ical/mombastatus%40gmail.com/public/basic.ics',
         lat: 40.05,
-        lon: -84.22
+        lon: -84.22,
+        trailheads: [
+            { name: 'Main Entrance', address: '4485 Union Rd, Dayton, OH 45424' }
+        ]
     },
     johnbryan: {
         name: 'John Bryan',
         type: 'facebook',
         pageId: '128228967211438',
         lat: 39.79,
-        lon: -83.89
+        lon: -83.89,
+        trailheads: [
+            { name: 'Trailhead', address: 'John Bryan Mountain Bike Trail, Yellow Springs, OH 45387' }
+        ]
     },
     caesarcreek: {
         name: 'Caesar Creek',
         type: 'facebook',
         pageId: '576124532419546',
         lat: 39.49,
-        lon: -84.06
+        lon: -84.06,
+        trailheads: [
+            { name: 'Ward Trailhead', address: 'Caesar Creek Ward Rd MTB Trail Head, Waynesville, OH 45068' },
+            { name: 'Campground', address: 'Caesar Creek Campground Loop MTB Trailhead, Wilmington, OH 45177' },
+            { name: 'Harveysburg', address: '5563-5679 Harveysburg Rd, Waynesville, OH 45068' }
+        ]
     },
     troy: {
         name: 'Troy MTB',
         type: 'facebook',
         pageId: '322521698109617',
         lat: 40.04,
-        lon: -84.20
+        lon: -84.20,
+        trailheads: [
+            { name: 'Main Entrance', address: '1670 Troy-Sidney Rd, Troy, OH 45373', note: 'Open sunrise to sunset' }
+        ]
     }
 };
+
+// ============ RETRY WITH BACKOFF ============
+
+async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+    let lastError;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, options);
+
+            // Handle rate limiting specifically
+            if (response.status === 429) {
+                const retryAfter = response.headers.get('Retry-After');
+                const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, attempt) * 1000;
+                if (attempt < maxRetries - 1) {
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                    continue;
+                }
+                const error = new Error('Rate limited');
+                error.status = 429;
+                throw error;
+            }
+
+            return response;
+        } catch (error) {
+            lastError = error;
+            if (attempt < maxRetries - 1 && !error.status) {
+                // Exponential backoff for network errors (not HTTP errors)
+                await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 500));
+            }
+        }
+    }
+    throw lastError;
+}
 
 // ============ ICAL PARSING (MoMBA) ============
 
@@ -85,7 +132,7 @@ function determineICalStatus(summary) {
 
 async function fetchMombaStatus(url) {
     try {
-        const response = await fetch(url);
+        const response = await fetchWithRetry(url);
         if (!response.ok) throw new Error(`Failed to fetch calendar: ${response.status}`);
 
         const icalText = await response.text();
@@ -161,7 +208,7 @@ function colorToDescription(color) {
 async function fetchFacebookStatus(pageId) {
     try {
         const imageUrl = `https://graph.facebook.com/${pageId}/picture?type=large`;
-        const response = await fetch(imageUrl, {
+        const response = await fetchWithRetry(imageUrl, {
             headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
         });
 
@@ -198,6 +245,9 @@ async function fetchFacebookStatus(pageId) {
         };
     } catch (error) {
         console.error('Facebook fetch error:', error);
+        if (error.status === 429) {
+            return { status: 'error', description: 'Rate limited - please try again later.' };
+        }
         return { status: 'unknown', description: 'Unable to determine trail status. Check the Facebook page directly.' };
     }
 }
@@ -250,7 +300,12 @@ async function fetchWeatherPrediction(lat, lon, apiKey) {
 
     try {
         const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
-        const response = await fetch(url);
+        const response = await fetchWithRetry(url);
+
+        if (response.status === 401) {
+            console.error('OpenWeatherMap API key invalid or not yet activated');
+            return null;
+        }
         if (!response.ok) throw new Error(`Forecast API error: ${response.status}`);
 
         const data = await response.json();
@@ -310,6 +365,9 @@ async function fetchWeatherPrediction(lat, lon, apiKey) {
         };
     } catch (error) {
         console.error('Weather fetch error:', error);
+        if (error.status === 429) {
+            return { error: 'rate_limited', message: 'Weather API rate limited' };
+        }
         return null;
     }
 }
@@ -330,10 +388,10 @@ exports.handler = async function(event, context) {
                 status = await fetchFacebookStatus(trail.pageId);
             }
 
-            // Fetch weather prediction for this trail
+            // Fetch weather prediction for this specific trail location
             const weather = await fetchWeatherPrediction(trail.lat, trail.lon, apiKey);
 
-            return [id, { name: trail.name, ...status, weather }];
+            return [id, { name: trail.name, ...status, weather, trailheads: trail.trailheads }];
         });
 
         const trailResults = await Promise.all(fetchPromises);
@@ -343,7 +401,7 @@ exports.handler = async function(event, context) {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 'public, s-maxage=1800, max-age=1800'
+                'Cache-Control': 'public, s-maxage=7200, max-age=7200'
             },
             body: JSON.stringify({
                 trails: results,
