@@ -8,16 +8,14 @@ Real-time mountain bike trail status aggregator for Ohio trails. Displays open/c
 trail-status/
 ├── index.html                           # Single-page frontend
 ├── css/styles.css                       # Dark theme, responsive cards
-├── js/app.js                            # Frontend fetch logic, 5-min refresh
+├── js/app.js                            # Frontend fetch logic, manual refresh
 ├── netlify/functions/                   # Serverless backend
-│   ├── momba-status.js                  # Google Calendar iCal parser
-│   ├── johnbryan-status.js              # Facebook profile pic color detection
-│   ├── caesarcreek-status.js            # Facebook profile pic color detection
-│   ├── troy-status.js                   # Facebook profile pic color detection
-│   └── weather-prediction.js            # Tomorrow's forecast predictions
+│   └── all-statuses.js                  # Combined endpoint (all trails + weather)
 ├── netlify.toml                         # Netlify config
 └── package.json                         # Dependencies for functions
 ```
+
+**Note:** All trail status and weather logic is combined into a single function (`all-statuses.js`) to minimize Netlify function invocations. One page load = 1 function call instead of 5.
 
 ## Data Sources
 
@@ -53,13 +51,14 @@ trail-status/
   - High humidity (>85%) + moderate temps → Caution
   - Temps >40°F, humidity <75%, no rain → Open
 
-## Caching
+## Caching & Refresh
 
-All Netlify functions return `Cache-Control` headers for CDN caching:
-- **Success responses:** `s-maxage=300` (5 minutes)
-- **Error responses:** `s-maxage=60` (1 minute)
+- **Cache duration:** 30 minutes (`s-maxage=1800`)
+- **Error cache:** 5 minutes (`s-maxage=300`)
+- **Auto-refresh:** Disabled (to reduce function invocations)
+- **Manual refresh:** Button in header allows users to refresh on demand
 
-This ensures the "Updated" timestamp reflects when data was actually fetched, not the current request time.
+This ensures the "Updated" timestamp reflects when data was actually fetched, not the current request time. Users who want fresh data can click the Refresh button.
 
 ## Environment Variables
 
