@@ -1,6 +1,6 @@
 # MTB Trail Status
 
-Real-time mountain bike trail status aggregator for Ohio trails. Displays open/closed status by scraping multiple data sources and provides weather-based predictions.
+Real-time mountain bike trail status aggregator for Ohio trails. Displays open/closed status by scraping multiple data sources and provides weather-based predictions for tomorrow.
 
 ## Architecture
 
@@ -14,7 +14,7 @@ trail-status/
 │   ├── johnbryan-status.js              # Facebook profile pic color detection
 │   ├── caesarcreek-status.js            # Facebook profile pic color detection
 │   ├── troy-status.js                   # Facebook profile pic color detection
-│   └── weather-prediction.js            # OpenWeatherMap-based predictions
+│   └── weather-prediction.js            # Tomorrow's forecast predictions
 ├── netlify.toml                         # Netlify config
 └── package.json                         # Dependencies for functions
 ```
@@ -40,17 +40,26 @@ trail-status/
   - Blue (hue 180-260) → Freeze/Thaw
 - **Library:** Jimp v1.x for image processing
 
-### Weather Predictions
-- **API:** OpenWeatherMap Current Weather API
+### Tomorrow's Weather Predictions
+- **API:** OpenWeatherMap 5-Day Forecast API (`/data/2.5/forecast`)
+- **Purpose:** Predict tomorrow's trail status (today's status comes from official sources)
 - **Coordinates:** Hardcoded lat/lon for each trail location
-- **Prediction Logic:**
-  - 28-35°F → Freeze/Thaw
-  - <28°F → Frozen ground
-  - Rain in last 1-3 hours → Closed
-  - Current rain/drizzle → Closed
-  - Snow → Freeze/Thaw
-  - High humidity (>85%) + moderate temp → Caution
-  - >45°F, <70% humidity, no rain → Open
+- **Display:** Shows "Tomorrow (Prediction):" with disclaimer "*Weather-based estimate, not official*"
+- **Prediction Logic (analyzes all of tomorrow's daytime forecasts):**
+  - Snow expected → Freeze/Thaw
+  - Rain expected (>0.1" total) → Closed
+  - Temps cross freezing (low ≤35°F, high ≥32°F) → Freeze/Thaw
+  - Max temp <28°F → Freeze/Thaw (frozen ground)
+  - High humidity (>85%) + moderate temps → Caution
+  - Temps >40°F, humidity <75%, no rain → Open
+
+## Caching
+
+All Netlify functions return `Cache-Control` headers for CDN caching:
+- **Success responses:** `s-maxage=300` (5 minutes)
+- **Error responses:** `s-maxage=60` (1 minute)
+
+This ensures the "Updated" timestamp reflects when data was actually fetched, not the current request time.
 
 ## Environment Variables
 
@@ -86,7 +95,7 @@ npx netlify functions:invoke momba-status
 
 - **Hosting:** Netlify (auto-deploys from GitHub)
 - **Repo:** https://github.com/MAbdeldayem0/mtb-trail-status
-- **Live Site:** https://snazzy-tulumba-55e0f0.netlify.app
+- **Live Site:** https://ohmtb.netlify.app
 
 ## Key Implementation Details
 
@@ -101,18 +110,22 @@ const { r, g, b } = intToRGBA(pixel);
 
 ### Facebook Profile Picture URL
 ```
-https://graph.facebook.com/{PAGE_ID}/picture?type=large&redirect=true
+https://graph.facebook.com/{PAGE_ID}/picture?type=large
 ```
 
 ### iCal Parsing
 Manual parsing without external library. Looks for VEVENT blocks, extracts DTSTART and SUMMARY fields, filters for today's events.
+
+### Tomorrow's Forecast Filtering
+Filters 5-day forecast data for tomorrow's daytime hours (6am-9pm EST approximation), then analyzes min/max temps, total rain/snow, and weather descriptions.
 
 ## Common Issues
 
 1. **Facebook returns gray silhouette:** Wrong page ID or page has no profile picture
 2. **Jimp.read is not a function:** Using v0.x syntax with v1.x - use destructured import
 3. **Weather not showing:** OPENWEATHER_API_KEY not configured in Netlify environment
-4. **EPERM errors locally:** OneDrive sync conflict - delete `.netlify` folder and retry
+4. **OpenWeatherMap 401 error:** New API keys take up to 2 hours to activate after account creation
+5. **EPERM errors locally:** OneDrive sync conflict - delete `.netlify` folder and retry
 
 ## Future Enhancements
 
