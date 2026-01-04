@@ -1,7 +1,10 @@
 const fetch = require('node-fetch');
 const { Jimp, intToRGBA } = require('jimp');
+const { getStore } = require('@netlify/blobs');
 
 // ============ CONFIGURATION ============
+
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1457517860401184769/LwE3w91flTOPOXi-TwxE1J-A4KifmqKyKpTjmlRMSCLr6peW6_6xfi619hIqy-fs7Bu1';
 
 const TRAILS = {
     momba: {
@@ -372,6 +375,91 @@ async function fetchWeatherPrediction(lat, lon, apiKey) {
     }
 }
 
+// ============ DISCORD NOTIFICATIONS ============
+
+const STATUS_COLORS = {
+    open: 0x22c55e,       // Green
+    closed: 0xef4444,     // Red
+    caution: 0xf59e0b,    // Yellow
+    'freeze-thaw': 0x3b82f6, // Blue
+    unknown: 0x6b7280,    // Gray
+    error: 0x7c3aed       // Purple
+};
+
+const STATUS_EMOJIS = {
+    open: '🟢',
+    closed: '🔴',
+    caution: '🟡',
+    'freeze-thaw': '🔵',
+    unknown: '⚪',
+    error: '🟣'
+};
+
+async function sendDiscordNotification(trailName, oldStatus, newStatus) {
+    if (!DISCORD_WEBHOOK_URL) return;
+
+    const emoji = STATUS_EMOJIS[newStatus] || '⚪';
+    const oldEmoji = STATUS_EMOJIS[oldStatus] || '⚪';
+
+    const embed = {
+        title: `${emoji} ${trailName} Status Changed`,
+        description: `**${oldEmoji} ${oldStatus?.toUpperCase() || 'UNKNOWN'}** → **${emoji} ${newStatus.toUpperCase()}**`,
+        color: STATUS_COLORS[newStatus] || STATUS_COLORS.unknown,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: 'Miami Valley MTB Trail Status'
+        }
+    };
+
+    try {
+        await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ embeds: [embed] })
+        });
+        console.log(`Discord notification sent for ${trailName}: ${oldStatus} -> ${newStatus}`);
+    } catch (error) {
+        console.error('Discord webhook error:', error);
+    }
+}
+
+async function checkAndNotifyStatusChanges(currentStatuses, context) {
+    try {
+        const store = getStore({ name: 'trail-statuses', siteID: context.site?.id, token: context.token });
+
+        // Get previous statuses
+        let previousStatuses = {};
+        try {
+            const stored = await store.get('statuses', { type: 'json' });
+            if (stored) previousStatuses = stored;
+        } catch (e) {
+            console.log('No previous statuses found, initializing...');
+        }
+
+        // Check for changes and send notifications
+        for (const [trailId, data] of Object.entries(currentStatuses)) {
+            const currentStatus = data.status;
+            const previousStatus = previousStatuses[trailId];
+
+            if (previousStatus && previousStatus !== currentStatus && currentStatus !== 'error') {
+                await sendDiscordNotification(data.name, previousStatus, currentStatus);
+            }
+        }
+
+        // Store current statuses
+        const statusesToStore = {};
+        for (const [trailId, data] of Object.entries(currentStatuses)) {
+            if (data.status !== 'error') {
+                statusesToStore[trailId] = data.status;
+            }
+        }
+        await store.setJSON('statuses', statusesToStore);
+
+    } catch (error) {
+        console.error('Status change notification error:', error);
+    }
+}
+
 // ============ MAIN HANDLER ============
 
 exports.handler = async function(event, context) {
@@ -396,6 +484,9 @@ exports.handler = async function(event, context) {
 
         const trailResults = await Promise.all(fetchPromises);
         trailResults.forEach(([id, data]) => { results[id] = data; });
+
+        // Check for status changes and send Discord notifications
+        await checkAndNotifyStatusChanges(results, context);
 
         return {
             statusCode: 200,
