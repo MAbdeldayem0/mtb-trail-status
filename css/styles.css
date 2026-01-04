@@ -544,6 +544,14 @@ footer {
     color: #9cd3a2;
 }
 
+.discord-link {
+    color: #5865F2;
+}
+
+.discord-link:hover {
+    color: #7289da;
+}
+
 .contact-link svg {
     flex-shrink: 0;
 }
