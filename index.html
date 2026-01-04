@@ -13,9 +13,14 @@
         <header>
             <h1>Miami Valley MTB Trail Status</h1>
             <p class="subtitle">Real-time trail conditions</p>
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="trails">Trails</button>
+                <button class="tab-btn" data-tab="about">About</button>
+                <button class="tab-btn" data-tab="contact">Contact</button>
+            </nav>
         </header>
 
-        <main class="trails-grid">
+        <main id="trails-tab" class="tab-content active trails-grid">
             <!-- MoMBA Trail Card -->
             <div class="trail-card" id="momba-card">
                 <div class="trail-header">
@@ -89,11 +94,75 @@
             </div>
         </main>
 
+        <!-- About Tab -->
+        <section id="about-tab" class="tab-content">
+            <div class="info-card">
+                <h2>About</h2>
+                <p>Real-time trail conditions aggregator for Miami Valley MTB trails.</p>
+
+                <h3>Data Sources</h3>
+                <ul>
+                    <li><strong>MoMBA:</strong> Official Google Calendar</li>
+                    <li><strong>Others:</strong> Facebook profile picture color analysis</li>
+                </ul>
+
+                <h3>Status Legend</h3>
+                <ul class="status-legend">
+                    <li><span class="legend-badge open">Open</span> Rideable</li>
+                    <li><span class="legend-badge closed">Closed</span> Closed</li>
+                    <li><span class="legend-badge caution">Caution</span> Wet/soft conditions</li>
+                    <li><span class="legend-badge freeze-thaw">Freeze/Thaw</span> Avoid riding</li>
+                </ul>
+
+                <h3>Predictions</h3>
+                <p>Tomorrow's predictions use OpenWeatherMap data. Estimates only, not official.</p>
+
+                <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #7a7a6a;">Data cached for 2 hours.</p>
+            </div>
+        </section>
+
+        <!-- Contact Tab -->
+        <section id="contact-tab" class="tab-content">
+            <div class="info-card">
+                <h2>Contact</h2>
+                <p>Have questions, suggestions, or found an issue? Get in touch!</p>
+
+                <div class="contact-methods">
+                    <div class="contact-item">
+                        <h3>GitHub</h3>
+                        <p>Report issues or contribute to the project:</p>
+                        <a href="https://github.com/MAbdeldayem0/mtb-trail-status" target="_blank" class="contact-link">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                            </svg>
+                            github.com/MAbdeldayem0/mtb-trail-status
+                        </a>
+                    </div>
+
+                    <div class="contact-item">
+                        <h3>Email</h3>
+                        <p>For general inquiries:</p>
+                        <a href="mailto:mabdeldayem97@gmail.com" class="contact-link">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            mabdeldayem97@gmail.com
+                        </a>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <h3>Disclaimer</h3>
+                    <p>This is an unofficial aggregator. Always check official trail sources before riding. Trail conditions can change rapidly. Ride at your own risk.</p>
+                </div>
+            </div>
+        </section>
+
         <footer>
             <p>Data cached for 2 hours</p>
         </footer>
     </div>
 
-    <script src="js/app.js?v=3"></script>
+    <script src="js/app.js?v=4"></script>
 </body>
 </html>

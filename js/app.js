@@ -137,7 +137,32 @@ async function refreshStatuses() {
     updateLastUpdated(data.lastUpdated);
 }
 
+// Tab switching
+function initTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+
+            // Update button states
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update content visibility
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${targetTab}-tab`) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+}
+
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
+    initTabs();
     refreshStatuses();
 });

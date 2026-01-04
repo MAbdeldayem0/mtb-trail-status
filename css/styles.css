@@ -20,11 +20,11 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80');
+    background-image: url('https://as2.ftcdn.net/jpg/02/89/20/27/1000_F_289202753_VUeSO36UbT1DXTD0PXpbzmpYIW4oI7Sd.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    opacity: 0.25;
+    opacity: 0.4;
     pointer-events: none;
     z-index: 0;
 }
@@ -37,7 +37,7 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(145deg, rgba(20, 35, 18, 0.85) 0%, rgba(25, 20, 15, 0.9) 100%);
+    background: linear-gradient(145deg, rgba(20, 35, 18, 0.6) 0%, rgba(25, 20, 15, 0.65) 100%);
     pointer-events: none;
     z-index: 0;
 }
@@ -45,14 +45,14 @@ body::after {
 .container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
     position: relative;
     z-index: 1;
 }
 
 header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 header h1 {
@@ -68,16 +68,60 @@ header h1 {
     font-size: 1.1rem;
 }
 
+/* Navigation Tabs */
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.tab-btn {
+    padding: 0.6rem 1.5rem;
+    background: rgba(45, 55, 40, 0.5);
+    border: 1px solid rgba(120, 140, 100, 0.2);
+    border-radius: 8px;
+    color: #a8a89a;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background: rgba(60, 75, 50, 0.6);
+    color: #c8c8b8;
+}
+
+.tab-btn.active {
+    background: rgba(124, 179, 130, 0.25);
+    border-color: rgba(124, 179, 130, 0.4);
+    color: #7cb382;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none !important;
+}
+
+.tab-content.active {
+    display: grid !important;
+}
+
+#about-tab.active,
+#contact-tab.active {
+    display: block !important;
+}
+
 .trails-grid {
-    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .trail-card {
     background: linear-gradient(145deg, rgba(45, 55, 40, 0.6) 0%, rgba(35, 40, 32, 0.7) 100%);
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(120, 140, 100, 0.15);
     transition: transform 0.2s, box-shadow 0.2s;
@@ -94,7 +138,7 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .trail-header h2 {
@@ -152,7 +196,7 @@ header h1 {
 }
 
 .trail-body {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .trail-description {
@@ -341,7 +385,7 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 1rem;
+    padding-top: 0.75rem;
     border-top: 1px solid rgba(120, 140, 100, 0.15);
 }
 
@@ -363,9 +407,163 @@ header h1 {
 
 footer {
     text-align: center;
-    margin-top: 2rem;
+    margin-top: 1rem;
     color: #6a6a5a;
     font-size: 0.85rem;
+}
+
+/* Info Cards (About/Contact) */
+.info-card {
+    background: linear-gradient(145deg, rgba(45, 55, 40, 0.6) 0%, rgba(35, 40, 32, 0.7) 100%);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(120, 140, 100, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.info-card h2 {
+    font-size: 1.5rem;
+    color: #f0f0e8;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(120, 140, 100, 0.2);
+}
+
+.info-card h3 {
+    font-size: 1rem;
+    color: #c8c8b8;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-card p {
+    color: #a8a89a;
+    line-height: 1.5;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.info-card ul {
+    list-style: none;
+    margin: 0.4rem 0;
+}
+
+.info-card ul li {
+    color: #a8a89a;
+    padding: 0.2rem 0;
+    padding-left: 1rem;
+    position: relative;
+    font-size: 0.9rem;
+}
+
+.info-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    width: 4px;
+    height: 4px;
+    background: #7cb382;
+    border-radius: 50%;
+}
+
+/* Status Legend */
+.status-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.status-legend li::before {
+    display: none;
+}
+
+.legend-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    min-width: 70px;
+    text-align: center;
+}
+
+.legend-badge.open {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #fff;
+}
+
+.legend-badge.closed {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+.legend-badge.caution {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #000;
+}
+
+.legend-badge.freeze-thaw {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    color: #fff;
+}
+
+/* Contact Section */
+.contact-methods {
+    display: grid;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.contact-item {
+    padding: 1rem;
+    background: rgba(50, 60, 45, 0.4);
+    border-radius: 10px;
+    border: 1px solid rgba(100, 120, 80, 0.15);
+}
+
+.contact-item h3 {
+    margin-top: 0;
+    color: #c8c8b8;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #7cb382;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: color 0.2s;
+}
+
+.contact-link:hover {
+    color: #9cd3a2;
+}
+
+.contact-link svg {
+    flex-shrink: 0;
+}
+
+.disclaimer {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(100, 80, 60, 0.2);
+    border-radius: 8px;
+    border-left: 3px solid #f59e0b;
+}
+
+.disclaimer h3 {
+    margin-top: 0;
+    color: #f59e0b;
+}
+
+.disclaimer p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 640px) {
@@ -375,6 +573,15 @@ footer {
 
     header h1 {
         font-size: 1.8rem;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
     }
 
     .trail-header {
@@ -387,5 +594,17 @@ footer {
         flex-direction: column;
         gap: 0.5rem;
         align-items: flex-start;
+    }
+
+    .info-card {
+        padding: 1.25rem;
+    }
+
+    .info-card h2 {
+        font-size: 1.4rem;
+    }
+
+    .contact-link {
+        word-break: break-all;
     }
 }
