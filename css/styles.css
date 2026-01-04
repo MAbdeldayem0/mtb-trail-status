@@ -33,6 +33,32 @@ header h1 {
     font-size: 1.1rem;
 }
 
+.refresh-btn {
+    margin-top: 1rem;
+    padding: 0.6rem 1.5rem;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.refresh-btn:hover {
+    background: #2563eb;
+}
+
+.refresh-btn:active {
+    transform: scale(0.98);
+}
+
+.refresh-btn:disabled {
+    background: #4a5568;
+    cursor: not-allowed;
+}
+
 .trails-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

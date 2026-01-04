@@ -1,57 +1,11 @@
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
-
-async function fetchWeatherPredictions() {
+async function fetchAllStatuses() {
     try {
-        const response = await fetch('/.netlify/functions/weather-prediction');
-        if (!response.ok) throw new Error('Failed to fetch weather');
-        return await response.json();
-    } catch (error) {
-        console.error('Weather prediction fetch error:', error);
-        return { predictions: {} };
-    }
-}
-
-async function fetchMombaStatus() {
-    try {
-        const response = await fetch('/.netlify/functions/momba-status');
+        const response = await fetch('/.netlify/functions/all-statuses');
         if (!response.ok) throw new Error('Failed to fetch');
         return await response.json();
     } catch (error) {
-        console.error('MoMBA fetch error:', error);
-        return { status: 'error', description: 'Unable to fetch status' };
-    }
-}
-
-async function fetchJohnBryanStatus() {
-    try {
-        const response = await fetch('/.netlify/functions/johnbryan-status');
-        if (!response.ok) throw new Error('Failed to fetch');
-        return await response.json();
-    } catch (error) {
-        console.error('John Bryan fetch error:', error);
-        return { status: 'error', description: 'Unable to fetch status' };
-    }
-}
-
-async function fetchCaesarCreekStatus() {
-    try {
-        const response = await fetch('/.netlify/functions/caesarcreek-status');
-        if (!response.ok) throw new Error('Failed to fetch');
-        return await response.json();
-    } catch (error) {
-        console.error('Caesar Creek fetch error:', error);
-        return { status: 'error', description: 'Unable to fetch status' };
-    }
-}
-
-async function fetchTroyStatus() {
-    try {
-        const response = await fetch('/.netlify/functions/troy-status');
-        if (!response.ok) throw new Error('Failed to fetch');
-        return await response.json();
-    } catch (error) {
-        console.error('Troy fetch error:', error);
-        return { status: 'error', description: 'Unable to fetch status' };
+        console.error('Fetch error:', error);
+        return { trails: {}, error: 'Unable to fetch statuses' };
     }
 }
 
@@ -102,18 +56,14 @@ function updateTrailCard(trailId, data) {
     if (description) {
         description.textContent = data.description || 'No additional information available.';
     }
-
-    if (updated) {
-        updated.textContent = formatTime(data.lastUpdated);
-    }
 }
 
-function updateWeatherDisplay(trailId, prediction) {
+function updateWeatherDisplay(trailId, weather) {
     const weatherDiv = document.getElementById(`${trailId}-weather`);
     const predictionDiv = document.getElementById(`${trailId}-prediction`);
 
-    if (weatherDiv && prediction && prediction.tomorrow) {
-        const t = prediction.tomorrow;
+    if (weatherDiv && weather && weather.tomorrow) {
+        const t = weather.tomorrow;
         const iconUrl = `https://openweathermap.org/img/wn/${t.icon}@2x.png`;
         weatherDiv.innerHTML = `
             <span class="weather-label">Tomorrow's Weather:</span>
@@ -126,13 +76,13 @@ function updateWeatherDisplay(trailId, prediction) {
         weatherDiv.innerHTML = '';
     }
 
-    if (predictionDiv && prediction && prediction.prediction) {
-        const confidenceClass = prediction.confidence || 'low';
+    if (predictionDiv && weather && weather.prediction) {
+        const confidenceClass = weather.confidence || 'low';
         predictionDiv.className = `prediction-info ${confidenceClass}`;
         predictionDiv.innerHTML = `
             <span class="prediction-label">Tomorrow (Prediction):</span>
-            <span class="prediction-badge ${prediction.prediction}">${getStatusText(prediction.prediction)}</span>
-            <span class="prediction-reason">${prediction.reason || ''}</span>
+            <span class="prediction-badge ${weather.prediction}">${getStatusText(weather.prediction)}</span>
+            <span class="prediction-reason">${weather.reason || ''}</span>
             <span class="prediction-disclaimer">*Weather-based estimate, not official</span>
         `;
     } else if (predictionDiv) {
@@ -141,30 +91,40 @@ function updateWeatherDisplay(trailId, prediction) {
     }
 }
 
+function updateLastUpdated(isoString) {
+    const elements = document.querySelectorAll('.last-updated');
+    const timeText = formatTime(isoString);
+    elements.forEach(el => { el.textContent = timeText; });
+}
+
+function setRefreshButtonLoading(loading) {
+    const btn = document.getElementById('refresh-btn');
+    if (btn) {
+        btn.disabled = loading;
+        btn.textContent = loading ? 'Refreshing...' : 'Refresh';
+    }
+}
+
 async function refreshStatuses() {
-    const [mombaData, johnBryanData, caesarCreekData, troyData, weatherData] = await Promise.all([
-        fetchMombaStatus(),
-        fetchJohnBryanStatus(),
-        fetchCaesarCreekStatus(),
-        fetchTroyStatus(),
-        fetchWeatherPredictions()
-    ]);
+    setRefreshButtonLoading(true);
 
-    updateTrailCard('momba', mombaData);
-    updateTrailCard('johnbryan', johnBryanData);
-    updateTrailCard('caesarcreek', caesarCreekData);
-    updateTrailCard('troy', troyData);
+    const data = await fetchAllStatuses();
+    const trails = data.trails || {};
 
-    // Update weather predictions
-    const predictions = weatherData.predictions || {};
-    updateWeatherDisplay('momba', predictions.momba);
-    updateWeatherDisplay('johnbryan', predictions.johnbryan);
-    updateWeatherDisplay('caesarcreek', predictions.caesarcreek);
-    updateWeatherDisplay('troy', predictions.troy);
+    // Update each trail card
+    ['momba', 'johnbryan', 'caesarcreek', 'troy'].forEach(trailId => {
+        const trail = trails[trailId];
+        if (trail) {
+            updateTrailCard(trailId, trail);
+            updateWeatherDisplay(trailId, trail.weather);
+        }
+    });
+
+    updateLastUpdated(data.lastUpdated);
+    setRefreshButtonLoading(false);
 }
 
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
     refreshStatuses();
-    setInterval(refreshStatuses, REFRESH_INTERVAL);
 });
