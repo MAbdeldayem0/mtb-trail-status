@@ -6,15 +6,45 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(145deg, #1a2618 0%, #1f1a14 50%, #151a12 100%);
     min-height: 100vh;
-    color: #fff;
+    color: #f0f0e8;
+    position: relative;
+}
+
+/* Subtle topographic pattern overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 255, 255, 0.01) 50px,
+            rgba(255, 255, 255, 0.01) 51px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 255, 255, 0.01) 50px,
+            rgba(255, 255, 255, 0.01) 51px
+        );
+    pointer-events: none;
+    z-index: 0;
 }
 
 .container {
     max-width: 900px;
     margin: 0 auto;
     padding: 2rem 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 header {
@@ -26,28 +56,32 @@ header h1 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    color: #f5f5f0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
-    color: #8892b0;
+    color: #a8a89a;
     font-size: 1.1rem;
 }
 
 .refresh-btn {
     margin-top: 1rem;
     padding: 0.6rem 1.5rem;
-    background: #3b82f6;
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(74, 124, 89, 0.3);
 }
 
 .refresh-btn:hover {
-    background: #2563eb;
+    background: linear-gradient(135deg, #5a8c69 0%, #4d7b5a 100%);
+    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.4);
 }
 
 .refresh-btn:active {
@@ -55,7 +89,8 @@ header h1 {
 }
 
 .refresh-btn:disabled {
-    background: #4a5568;
+    background: #4a5548;
+    box-shadow: none;
     cursor: not-allowed;
 }
 
@@ -66,17 +101,19 @@ header h1 {
 }
 
 .trail-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(145deg, rgba(45, 55, 40, 0.6) 0%, rgba(35, 40, 32, 0.7) 100%);
     border-radius: 16px;
     padding: 1.5rem;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(120, 140, 100, 0.15);
     transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .trail-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    border-color: rgba(120, 140, 100, 0.25);
 }
 
 .trail-header {
@@ -89,6 +126,7 @@ header h1 {
 .trail-header h2 {
     font-size: 1.5rem;
     font-weight: 600;
+    color: #f0f0e8;
 }
 
 .status-badge {
@@ -101,37 +139,41 @@ header h1 {
 }
 
 .status-badge.loading {
-    background: #4a4a4a;
+    background: #4a4a42;
     color: #ccc;
 }
 
 .status-badge.open {
-    background: #10b981;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     color: #fff;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 
 .status-badge.closed {
-    background: #ef4444;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: #fff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .status-badge.caution {
-    background: #f59e0b;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     color: #000;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .status-badge.freeze-thaw {
-    background: #3b82f6;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
     color: #fff;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .status-badge.unknown {
-    background: #6b7280;
+    background: #6b7264;
     color: #fff;
 }
 
 .status-badge.error {
-    background: #7c3aed;
+    background: #7c3a5d;
     color: #fff;
 }
 
@@ -140,7 +182,7 @@ header h1 {
 }
 
 .trail-description {
-    color: #a8b2d1;
+    color: #c8c8b8;
     line-height: 1.6;
     font-size: 0.95rem;
 }
@@ -151,10 +193,11 @@ header h1 {
     gap: 0.75rem;
     margin-top: 0.75rem;
     padding: 0.5rem 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(60, 70, 50, 0.4);
     border-radius: 8px;
     font-size: 0.85rem;
     flex-wrap: wrap;
+    border: 1px solid rgba(100, 120, 80, 0.1);
 }
 
 .weather-info:empty {
@@ -164,7 +207,7 @@ header h1 {
 .weather-label {
     width: 100%;
     font-size: 0.75rem;
-    color: #64748b;
+    color: #8a8a7a;
     margin-bottom: 0.25rem;
 }
 
@@ -176,16 +219,16 @@ header h1 {
 .weather-temp {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #fff;
+    color: #f0f0e8;
 }
 
 .weather-desc {
-    color: #8892b0;
+    color: #a8a898;
     text-transform: capitalize;
 }
 
 .weather-details {
-    color: #64748b;
+    color: #7a7a6a;
     font-size: 0.8rem;
 }
 
@@ -205,23 +248,23 @@ header h1 {
 }
 
 .prediction-info.high {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.25);
 }
 
 .prediction-info.medium {
-    background: rgba(245, 158, 11, 0.15);
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .prediction-info.low {
-    background: rgba(107, 114, 128, 0.15);
-    border: 1px solid rgba(107, 114, 128, 0.3);
+    background: rgba(120, 120, 100, 0.12);
+    border: 1px solid rgba(120, 120, 100, 0.25);
 }
 
 .prediction-label {
     font-weight: 600;
-    color: #a8b2d1;
+    color: #c0c0b0;
 }
 
 .prediction-badge {
@@ -233,7 +276,7 @@ header h1 {
 }
 
 .prediction-badge.open {
-    background: #10b981;
+    background: #22c55e;
     color: #fff;
 }
 
@@ -248,19 +291,19 @@ header h1 {
 }
 
 .prediction-badge.freeze-thaw {
-    background: #3b82f6;
+    background: #60a5fa;
     color: #fff;
 }
 
 .prediction-reason {
-    color: #8892b0;
+    color: #a0a090;
     flex: 1;
 }
 
 .prediction-disclaimer {
     width: 100%;
     font-size: 0.7rem;
-    color: #64748b;
+    color: #7a7a6a;
     font-style: italic;
     margin-top: 0.25rem;
 }
@@ -270,29 +313,29 @@ header h1 {
     justify-content: space-between;
     align-items: center;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(120, 140, 100, 0.15);
 }
 
 .last-updated {
-    color: #64748b;
+    color: #7a7a6a;
     font-size: 0.8rem;
 }
 
 .source-link {
-    color: #60a5fa;
+    color: #7cb382;
     text-decoration: none;
     font-size: 0.85rem;
     transition: color 0.2s;
 }
 
 .source-link:hover {
-    color: #93c5fd;
+    color: #9cd3a2;
 }
 
 footer {
     text-align: center;
     margin-top: 2rem;
-    color: #64748b;
+    color: #6a6a5a;
     font-size: 0.85rem;
 }
 
