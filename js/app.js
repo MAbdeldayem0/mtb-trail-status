@@ -130,7 +130,7 @@ function updateWeatherDisplay(trailId, prediction) {
         const confidenceClass = prediction.confidence || 'low';
         predictionDiv.className = `prediction-info ${confidenceClass}`;
         predictionDiv.innerHTML = `
-            <span class="prediction-label">Tomorrow (AI):</span>
+            <span class="prediction-label">Tomorrow (Prediction):</span>
             <span class="prediction-badge ${prediction.prediction}">${getStatusText(prediction.prediction)}</span>
             <span class="prediction-reason">${prediction.reason || ''}</span>
             <span class="prediction-disclaimer">*Weather-based estimate, not official</span>
