@@ -103,7 +103,10 @@ exports.handler = async function(event, context) {
     if (!apiKey) {
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=300, max-age=300'
+            },
             body: JSON.stringify({
                 error: 'Weather API key not configured',
                 predictions: {}
@@ -144,7 +147,10 @@ exports.handler = async function(event, context) {
 
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=300, max-age=300'
+            },
             body: JSON.stringify({
                 predictions,
                 lastUpdated: new Date().toISOString()
@@ -155,7 +161,10 @@ exports.handler = async function(event, context) {
         console.error('Weather prediction error:', error);
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=60, max-age=60'
+            },
             body: JSON.stringify({
                 error: 'Failed to fetch weather predictions',
                 predictions: {}

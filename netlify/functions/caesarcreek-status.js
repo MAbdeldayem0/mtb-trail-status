@@ -115,7 +115,10 @@ exports.handler = async function(event, context) {
 
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=300, max-age=300'
+            },
             body: JSON.stringify({
                 status: status,
                 description: description,
@@ -130,7 +133,10 @@ exports.handler = async function(event, context) {
 
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=60, max-age=60'
+            },
             body: JSON.stringify({
                 status: 'unknown',
                 description: 'Unable to determine trail status. Check the Facebook page directly.',

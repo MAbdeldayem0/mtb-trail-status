@@ -117,7 +117,10 @@ exports.handler = async function(event, context) {
             if (mostRecent) {
                 return {
                     statusCode: 200,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'public, s-maxage=300, max-age=300'
+                    },
                     body: JSON.stringify({
                         status: determineStatus(mostRecent.summary),
                         description: `Last update: ${mostRecent.summary}${mostRecent.description ? ' - ' + mostRecent.description : ''}`,
@@ -128,7 +131,10 @@ exports.handler = async function(event, context) {
 
             return {
                 statusCode: 200,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'public, s-maxage=300, max-age=300'
+                },
                 body: JSON.stringify({
                     status: 'unknown',
                     description: 'No status updates found',
@@ -142,7 +148,10 @@ exports.handler = async function(event, context) {
 
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=300, max-age=300'
+            },
             body: JSON.stringify({
                 status: determineStatus(latestToday.summary),
                 description: latestToday.description || latestToday.summary,
@@ -155,7 +164,10 @@ exports.handler = async function(event, context) {
 
         return {
             statusCode: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=60, max-age=60'
+            },
             body: JSON.stringify({
                 status: 'error',
                 description: 'Unable to fetch trail status',
